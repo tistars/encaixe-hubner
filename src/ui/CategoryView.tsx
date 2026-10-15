@@ -3,6 +3,8 @@ import { brl, CATEGORIES, categoryName } from '../data/catalog'
 import type { CategoryId, Part, VehicleModel } from '../types'
 import { Icon } from './icons'
 
+const plural = (n: number) => `${n} ${n === 1 ? 'peça' : 'peças'}`
+
 interface Props {
   model: VehicleModel
   onOpen: (p: Part) => void
@@ -36,7 +38,7 @@ export function CategoryView({ model, onOpen, onAdd }: Props) {
             <Icon name="grid" size={26} />
           </span>
           <span className="cat-name">Todas</span>
-          <span className="cat-count">{[...counts.values()].reduce((a, b) => a + b, 0)} peças</span>
+          <span className="cat-count">{plural([...counts.values()].reduce((a, b) => a + b, 0))}</span>
         </button>
         {cats.map((c) => (
           <button key={c.id} role="tab" aria-selected={cat === c.id} className={`cat ${cat === c.id ? 'on' : ''}`} onClick={() => setCat(c.id)}>
@@ -44,7 +46,7 @@ export function CategoryView({ model, onOpen, onAdd }: Props) {
               <Icon name={c.icon} size={26} />
             </span>
             <span className="cat-name">{c.name}</span>
-            <span className="cat-count">{counts.get(c.id) ?? 0} peças</span>
+            <span className="cat-count">{plural(counts.get(c.id) ?? 0)}</span>
           </button>
         ))}
       </div>

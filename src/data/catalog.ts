@@ -297,7 +297,7 @@ const busParts: Part[] = [
   },
   {
     id: 'o-carroceria', name: 'Carroceria do ônibus', category: 'carroceria', icon: 'carroceria', hubner: false,
-    meshes: [{ shape: { kind: 'box', size: [10.2, 2.4, 2.5], radius: 0.18 }, pos: [0, 2.25, 0], explode: [0, 2.9, 0] }],
+    meshes: [{ shape: { kind: 'box', size: [10.2, 2.4, 2.5], radius: 0.18 }, pos: [0, 2.25, 0], explode: [0, 3.4, -0.6] }],
   },
   {
     id: 'o-longarinas', name: 'Longarinas do chassi', category: 'estrutura', icon: 'estrutura', hubner: false,
@@ -329,17 +329,17 @@ export const VEHICLES: VehicleModel[] = [
   {
     id: 'caminhao-medio', kind: 'caminhao', brand: 'Volkswagen', model: 'Constellation 24.280 6x2',
     years: [2019, 2020, 2021, 2022, 2023, 2024], engine: 'MAN D08 6 cil. 6,9 L diesel',
-    camera: [8.5, 5.2, 9.5], parts: truckParts,
+    camera: [9, 5.6, 10], parts: truckParts,
   },
   {
     id: 'trator', kind: 'trator', brand: 'Valtra', model: 'Série A 4x4',
     years: [2019, 2020, 2021, 2022, 2023], engine: 'AGCO Power 3 cil. 3,3 L diesel',
-    camera: [5.5, 3.8, 6.2], parts: tractorParts,
+    camera: [7.4, 5.4, 8.2], parts: tractorParts,
   },
   {
     id: 'onibus', kind: 'onibus', brand: 'Mercedes-Benz', model: 'OF 1721 (chassi de ônibus)',
     years: [2018, 2019, 2020, 2021, 2022], engine: 'OM 924 LA 4 cil. 4,8 L diesel',
-    camera: [10, 6, 11], parts: busParts,
+    camera: [9, 5.2, 10], parts: busParts,
   },
 ]
 

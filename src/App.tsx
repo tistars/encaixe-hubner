@@ -131,10 +131,10 @@ export default function App() {
           </section>
 
           <div className="tabs" role="tablist" aria-label="Modo de navegação">
-            <button role="tab" aria-selected={tab === '3d'} className={tab === '3d' ? 'on' : ''} onClick={() => setTab('3d')}>
+            <button role="tab" aria-selected={tab === '3d'} className={tab === '3d' ? 'on' : ''} onClick={() => { setSelected(null); setTab('3d') }}>
               <Icon name="cube" size={18} /> Vista 3D
             </button>
-            <button role="tab" aria-selected={tab === 'lista'} className={tab === 'lista' ? 'on' : ''} onClick={() => setTab('lista')}>
+            <button role="tab" aria-selected={tab === 'lista'} className={tab === 'lista' ? 'on' : ''} onClick={() => { setSelected(null); setTab('lista') }}>
               <Icon name="grid" size={18} /> Por categoria
             </button>
           </div>
