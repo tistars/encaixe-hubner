@@ -39,6 +39,6 @@ export class DemoPlateProvider implements PlateProvider {
     // pequena espera para a interface mostrar o estado "consultando"
     await new Promise((r) => setTimeout(r, 650))
     const hit = DEMO_PLATES[p]
-    return hit ? { ...hit, plate: p, source: 'demo' } : null
+    return hit ? { ...hit, plate: p, source: 'demo', sourceName: 'Placa de exemplo (fictícia)' } : null
   }
 }

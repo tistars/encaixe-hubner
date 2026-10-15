@@ -51,10 +51,33 @@ export interface PlateProvider {
 
 - `src/providers/demoProvider.ts`: placas de exemplo (padrão).
 - `src/providers/httpProvider.ts`: esqueleto para um **backend próprio** que responda
-  `GET {VITE_PLATE_API_URL}/placa/ABC1D23 → { brand, model, year, engine, vehicleId }`.
+  `GET {VITE_PLATE_API_URL}/placa/ABC1D23 → { brand, model, year, engine?, vehicleId? }` e, opcionais,
+  `kind` (`carro|moto|caminhao|onibus|trator`), `yearFab`, `color`, `fuel`, `city`, `uf`, `fipeCode`, `fipeValue`,
+  `fipeMonth`, `sourceName`. **Só dados do veículo**: nada do proprietário (LGPD).
 - `src/providers/index.ts`: o ponto de troca.
 
 A credencial de qualquer base de dados de placa fica **no backend**, nunca no front-end.
+
+### Modal do veículo
+
+Toda busca abre um modal (`src/ui/VehicleModal.tsx`, foco preso, Esc fecha) com os dados do veículo, a fonte e o aviso
+"dados públicos do veículo, sem dados do proprietário". O casamento com o catálogo 3D fica em `src/data/match.ts`:
+
+- placa de exemplo → "Ver peças em 3D";
+- caminhão, ônibus ou trator → "Ver peças em 3D (exemplo)", deixando claro que o 3D é o modelo de exemplo do mesmo tipo;
+- carro ou moto → diz que a Hübner fabrica para pesados/montadoras e oferece ver um exemplo, sem fingir que tem peça;
+- placa não encontrada ou consulta com erro → a pessoa informa tipo, marca, modelo e ano e o app busca na
+  **Tabela FIPE** (`src/providers/fipe.ts`, API pública gratuita do Parallelum, CORS aberto, 500 consultas/dia por IP
+  de quem usa, sem chave): marca, modelo, ano, combustível, código e valor FIPE reais.
+
+### Por que ainda não há consulta de placa real (15/10/2026)
+
+Testado do servidor (AWS) com navegador real (Chromium headless): placafipe.com, keplaca.com, tabelafipebrasil.com e
+placaipva.com.br devolvem bloqueio do Cloudflare para o IP (não é desafio que o navegador resolva);
+consultarplacas.com carrega mas não devolve dados (reCAPTCHA); consultasdeplacas.com pede e-mail; consultadeplaca.net
+é vitrine de relatório pago. Não existe API pública gratuita e oficial de placa → veículo. Caminhos possíveis, nenhum
+contratado: API paga de placa (centavos a poucos reais por consulta), convênio com DETRAN/SENATRAN, ou a própria base
+da Hübner/distribuidor. Quando houver, basta um backend que siga o contrato acima e `VITE_PLATE_API_URL` no build.
 
 ## Dados: real × exemplo
 

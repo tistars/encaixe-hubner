@@ -70,15 +70,31 @@ export interface VehicleModel {
   parts: Part[]
 }
 
+/** Tipo de veículo, no vocabulário da Tabela FIPE (ônibus e micro-ônibus ficam em caminhões). */
+export type VehicleKind = 'carro' | 'moto' | 'caminhao' | 'onibus' | 'trator'
+
 export interface VehicleInfo {
   plate?: string
   brand: string
   model: string
   year: number
   engine: string
-  /** id do modelo 3D/catálogo que atende este veículo */
+  /** id do modelo 3D/catálogo que atende este veículo; vazio quando nenhum atende */
   vehicleId: string
-  source: 'demo' | 'manual' | 'api'
+  source: 'demo' | 'manual' | 'api' | 'fipe'
+  // Campos públicos do VEÍCULO (opcionais). Nunca dado do proprietário.
+  kind?: VehicleKind
+  yearFab?: number
+  color?: string
+  fuel?: string
+  city?: string
+  uf?: string
+  fipeCode?: string
+  /** valor FIPE em texto, como a fonte devolve ("R$ 45.000,00") */
+  fipeValue?: string
+  fipeMonth?: string
+  /** nome da fonte exibido no modal */
+  sourceName?: string
 }
 
 export interface CartItem {

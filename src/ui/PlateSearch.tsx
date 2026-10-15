@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { DEMO_PLATES, formatPlate, isValidPlate, normalizePlate, plateProvider } from '../providers'
 import { ENABLED_VEHICLES, VEHICLES } from '../data/catalog'
 import type { VehicleInfo } from '../types'
 import { Icon } from './icons'
+import { VehicleModal, type LookupState } from './VehicleModal'
 
 interface Props {
   onFound: (v: VehicleInfo) => void
@@ -11,8 +12,14 @@ interface Props {
 
 export function PlateSearch({ onFound, initialPlate = '' }: Props) {
   const [plate, setPlate] = useState(initialPlate)
-  const [state, setState] = useState<'idle' | 'loading' | 'notfound' | 'invalid' | 'error'>('idle')
+  const [state, setState] = useState<'idle' | 'loading' | 'invalid'>('idle')
   const [manual, setManual] = useState(false)
+  const [lookup, setLookup] = useState<LookupState | null>(null)
+  const input = useRef<HTMLInputElement>(null)
+  const closeModal = useCallback(() => {
+    setLookup(null)
+    setState('idle')
+  }, [])
 
   const examples = Object.entries(DEMO_PLATES).filter(([, v]) => ENABLED_VEHICLES.includes(v.vehicleId))
 
@@ -21,14 +28,17 @@ export function PlateSearch({ onFound, initialPlate = '' }: Props) {
     setPlate(p)
     if (!isValidPlate(p)) return setState('invalid')
     setState('loading')
+    setLookup({ status: 'loading', plate: p })
+    // toda busca abre o modal com o que a placa revelou; ver as peças é decisão de quem busca
+    let next: LookupState
     try {
       const v = await plateProvider.lookup(p)
-      if (!v || !ENABLED_VEHICLES.includes(v.vehicleId)) return setState('notfound')
-      setState('idle')
-      onFound(v)
+      next = v ? { status: 'found', plate: p, vehicle: v } : { status: 'notfound', plate: p, demo: plateProvider.isDemo }
     } catch {
-      setState('error')
+      next = { status: 'error', plate: p }
     }
+    setLookup((cur) => (cur?.plate === p ? next : cur))
+    setState('idle')
   }
 
   return (
@@ -54,6 +64,7 @@ export function PlateSearch({ onFound, initialPlate = '' }: Props) {
             <span className="flag" />
           </span>
           <input
+            ref={input}
             id="placa"
             value={plate}
             onChange={(e) => {
@@ -86,8 +97,6 @@ export function PlateSearch({ onFound, initialPlate = '' }: Props) {
 
       <p id="placa-msg" className={`form-msg ${state}`} role="status" aria-live="polite">
         {state === 'invalid' && 'Placa inválida. Use o formato ABC1234 ou ABC1D23.'}
-        {state === 'notfound' && `Não achamos ${formatPlate(plate)} na base de demonstração. Use uma placa de exemplo ou informe o veículo.`}
-        {state === 'error' && 'A consulta falhou. Tente de novo ou informe o veículo manualmente.'}
       </p>
 
       <div className="examples">
@@ -107,8 +116,19 @@ export function PlateSearch({ onFound, initialPlate = '' }: Props) {
 
       <p className="provider-note small muted">
         <Icon name="info" size={14} /> Fonte da placa: {plateProvider.name}
-        {plateProvider.isDemo && ' — sem consulta a base oficial.'}
+        {plateProvider.isDemo && ' — sem consulta a base oficial. Placa real: você informa o veículo e buscamos na Tabela FIPE.'}
       </p>
+
+      <VehicleModal
+        state={lookup}
+        onClose={closeModal}
+        onOpenVehicle={(v) => {
+          setLookup(null)
+          onFound(v)
+        }}
+        onPicked={(v) => setLookup({ status: 'found', plate: v.plate ?? plate, vehicle: v })}
+        returnFocus={() => input.current?.focus()}
+      />
     </section>
   )
 }
